@@ -127,6 +127,26 @@ vim.keymap.set('n', 's', ':HopChar1MW<CR>', { noremap = true, silent = true })
 
 vim.keymap.set('n', 'U', ':redo<CR>', { noremap = true, silent = true })
 
+-- insert timestamp
+vim.keymap.set('n', '<leader>ts', function()
+  local ts = tostring(os.date 'n%Y%m%d%H%M%S')
+  local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+  vim.api.nvim_buf_set_text(0, row - 1, col, row - 1, col, { ts })
+end, { desc = 'write [t]ime[s]tamp' })
+
+-- my zen mode
+vim.keymap.set('n', '<leader>z', function()
+  vim.opt.signcolumn = 'no'
+  vim.opt.number = false
+  vim.cmd ':PencilSoft'
+end, { desc = '[z]en' })
+
+vim.keymap.set('n', '<leader>nz', function()
+  vim.opt.signcolumn = 'yes'
+  vim.opt.number = true
+  vim.cmd ':PencilOff'
+end, { desc = '[n]o [z]en' })
+
 -- Highlight when yanking (copying) text
 --  Try it with `yap` in normal mode
 --  See `:help vim.highlight.on_yank()`
@@ -225,6 +245,19 @@ require('lazy').setup({
     config = function()
       -- you can configure Hop the way you like here; see :h hop-config
       require('hop').setup { keys = 'asdflkjghoiuwertxcvmn' }
+    end,
+  },
+
+  {
+    'preservim/vim-pencil',
+    config = function()
+      vim.g['pencil#wrapModeDefault'] = 'soft'
+      vim.api.nvim_create_autocmd('FileType', {
+        pattern = { '*.md' },
+        callback = function()
+          vim.cmd ':PencilSoft'
+        end,
+      })
     end,
   },
 
